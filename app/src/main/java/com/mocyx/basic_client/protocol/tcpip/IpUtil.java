@@ -10,7 +10,7 @@ public class IpUtil {
         Packet packet = new Packet();
         packet.isTCP = false;
         packet.isUDP = true;
-        Packet.IP4Header ip4Header = new Packet.IP4Header();
+        IP4Header ip4Header = new IP4Header();
         ip4Header.version = 4;
         ip4Header.IHL = 5;
         ip4Header.destinationAddress = dest.getAddress();
@@ -24,14 +24,14 @@ public class IpUtil {
         ip4Header.identificationAndFlagsAndFragmentOffset = ipId << 16 | ipFlag << 8 | ipOff;
 
         ip4Header.optionsAndPadding = 0;
-        ip4Header.protocol = Packet.IP4Header.TransportProtocol.UDP;
+        ip4Header.protocol = TransportProtocol.UDP;
         ip4Header.protocolNum = 17;
         ip4Header.sourceAddress = source.getAddress();
         ip4Header.totalLength = 60;
         ip4Header.typeOfService = 0;
         ip4Header.TTL = 64;
 
-        Packet.UDPHeader udpHeader = new Packet.UDPHeader();
+        UDPHeader udpHeader = new UDPHeader();
         udpHeader.sourcePort = source.getPort();
         udpHeader.destinationPort = dest.getPort();
         udpHeader.length = 0;
@@ -48,7 +48,7 @@ public class IpUtil {
         Packet packet = new Packet();
         packet.isTCP = true;
         packet.isUDP = false;
-        Packet.IP4Header ip4Header = new Packet.IP4Header();
+        IP4Header ip4Header = new IP4Header();
         ip4Header.version = 4;
         ip4Header.IHL = 5;
         ip4Header.destinationAddress = dest.getAddress();
@@ -62,14 +62,14 @@ public class IpUtil {
         ip4Header.identificationAndFlagsAndFragmentOffset = ipId << 16 | ipFlag << 8 | ipOff;
 
         ip4Header.optionsAndPadding = 0;
-        ip4Header.protocol = Packet.IP4Header.TransportProtocol.TCP;
+        ip4Header.protocol = TransportProtocol.TCP;
         ip4Header.protocolNum = 6;
         ip4Header.sourceAddress = source.getAddress();
         ip4Header.totalLength = 60;
         ip4Header.typeOfService = 0;
         ip4Header.TTL = 64;
 
-        Packet.TCPHeader tcpHeader = new Packet.TCPHeader();
+        TCPHeader tcpHeader = new TCPHeader();
         tcpHeader.acknowledgementNumber = ack;
         tcpHeader.checksum = 0;
         tcpHeader.dataOffsetAndReserved = -96;

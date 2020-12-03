@@ -4,6 +4,7 @@ import android.net.VpnService;
 import android.util.Log;
 
 import com.mocyx.basic_client.protocol.tcpip.IpUtil;
+import com.mocyx.basic_client.protocol.tcpip.UDPHeader;
 import com.mocyx.basic_client.util.ByteBufferPool;
 import com.mocyx.basic_client.protocol.tcpip.Packet;
 import com.mocyx.basic_client.config.Config;
@@ -160,7 +161,7 @@ public class BioUdpHandler implements Runnable {
                 Packet packet = queue.take();
 
                 InetAddress destinationAddress = packet.ip4Header.destinationAddress;
-                Packet.UDPHeader header = packet.udpHeader;
+                UDPHeader header = packet.udpHeader;
 
                 //Log.d(TAG, String.format("get pack %d udp %d ", packet.packId, header.length));
 

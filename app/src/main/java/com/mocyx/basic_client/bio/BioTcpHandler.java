@@ -7,7 +7,7 @@ import android.util.Log;
 import com.mocyx.basic_client.protocol.tcpip.IpUtil;
 import com.mocyx.basic_client.util.ByteBufferPool;
 import com.mocyx.basic_client.protocol.tcpip.Packet;
-import com.mocyx.basic_client.protocol.tcpip.Packet.TCPHeader;
+import com.mocyx.basic_client.protocol.tcpip.TCPHeader;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -91,7 +91,7 @@ public class BioTcpHandler implements Runnable {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            sendTcpPack(tunnel, (byte) (TCPHeader.FIN | Packet.TCPHeader.ACK), null);
+            sendTcpPack(tunnel, (byte) (TCPHeader.FIN | TCPHeader.ACK), null);
             tunnel.downActive = false;
             if (isClosedTunnel(tunnel)) {
                 tunnel.tunnelCloseMsgQueue.add(tunnel.tunnelKey);

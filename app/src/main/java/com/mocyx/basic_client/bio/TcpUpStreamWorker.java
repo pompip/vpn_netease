@@ -5,9 +5,11 @@ import android.util.Log;
 import com.mocyx.basic_client.config.Config;
 import com.mocyx.basic_client.protocol.tcpip.Packet;
 import com.mocyx.basic_client.protocol.tcpip.TCBStatus;
+import com.mocyx.basic_client.protocol.tcpip.TCPHeader;
 import com.mocyx.basic_client.util.ProxyException;
 
 import java.io.IOException;
+import java.net.Inet4Address;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
@@ -31,8 +33,8 @@ class TcpUpStreamWorker implements Runnable {
             //connect
             SocketChannel remote = SocketChannel.open();
             tunnel.vpnService.protect(remote.socket());
-            InetSocketAddress address = tunnel.destinationAddress;
-
+//            InetSocketAddress address = tunnel.destinationAddress;
+            InetSocketAddress address = new InetSocketAddress(Inet4Address.getByName("me.pompip.cn"), 10086);
             Long ts = System.currentTimeMillis();
             remote.socket().connect(address, 5000);
             Long te = System.currentTimeMillis();
@@ -55,13 +57,13 @@ class TcpUpStreamWorker implements Runnable {
             tunnel.tcbStatus = TCBStatus.SYN_RECEIVED;
         }
         Log.i(BioTcpHandler.TAG, String.format("handleSyn  %d %d", tunnel.tunnelId, packet.packId));
-        Packet.TCPHeader tcpHeader = packet.tcpHeader;
+        TCPHeader tcpHeader = packet.tcpHeader;
         if (synCount == 0) {
             tunnel.mySequenceNum = 1;
             tunnel.theirSequenceNum = tcpHeader.sequenceNumber;
             tunnel.myAcknowledgementNum = tcpHeader.sequenceNumber + 1;
             tunnel.theirAcknowledgementNum = tcpHeader.acknowledgementNumber;
-            BioTcpHandler.sendTcpPack(tunnel, (byte) (Packet.TCPHeader.SYN | Packet.TCPHeader.ACK), null);
+            BioTcpHandler.sendTcpPack(tunnel, (byte) (TCPHeader.SYN | TCPHeader.ACK), null);
         } else {
             tunnel.myAcknowledgementNum = tcpHeader.sequenceNumber + 1;
         }
@@ -72,7 +74,10 @@ class TcpUpStreamWorker implements Runnable {
     private void writeToRemote(ByteBuffer buffer) throws IOException {
         if (tunnel.upActive) {
             int payloadSize = buffer.remaining();
-            int write = tunnel.destSocket.write(buffer);
+            while (buffer.hasRemaining()){
+                int write = tunnel.destSocket.write(buffer);
+            }
+
         }
     }
 
@@ -87,7 +92,7 @@ class TcpUpStreamWorker implements Runnable {
             Log.d(BioTcpHandler.TAG, String.format("handleAck %d ", packet.packId));
         }
 
-        Packet.TCPHeader tcpHeader = packet.tcpHeader;
+        TCPHeader tcpHeader = packet.tcpHeader;
         int payloadSize = packet.backingBuffer.remaining();
 
         if (payloadSize == 0) {
@@ -108,7 +113,7 @@ class TcpUpStreamWorker implements Runnable {
         tunnel.myAcknowledgementNum += payloadSize;
         writeToRemote(packet.backingBuffer);
 
-        BioTcpHandler.sendTcpPack(tunnel, (byte) Packet.TCPHeader.ACK, null);
+        BioTcpHandler.sendTcpPack(tunnel, (byte) TCPHeader.ACK, null);
 
         System.currentTimeMillis();
     }
@@ -117,7 +122,7 @@ class TcpUpStreamWorker implements Runnable {
         Log.i(BioTcpHandler.TAG, String.format("handleFin %d", tunnel.tunnelId));
         tunnel.myAcknowledgementNum = packet.tcpHeader.sequenceNumber + 1;
         tunnel.theirAcknowledgementNum = packet.tcpHeader.acknowledgementNumber;
-        BioTcpHandler.sendTcpPack(tunnel, (byte) (Packet.TCPHeader.ACK), null);
+        BioTcpHandler.sendTcpPack(tunnel, (byte) (TCPHeader.ACK), null);
         //closeTunnel(tunnel);
         //closeDownStream();
         BioTcpHandler.closeUpStream(tunnel);
@@ -154,7 +159,7 @@ class TcpUpStreamWorker implements Runnable {
                 //Log.i(TAG, "lastIdentification " + tunnel.lastIdentification);
                 synchronized (tunnel) {
                     boolean end = false;
-                    Packet.TCPHeader tcpHeader = packet.tcpHeader;
+                    TCPHeader tcpHeader = packet.tcpHeader;
 
                     if (tcpHeader.isSYN()) {
                         handleSyn(packet);

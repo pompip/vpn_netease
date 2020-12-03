@@ -18,14 +18,6 @@ public class BioUtil {
         return len;
     }
 
-    public static int read(SocketChannel channel, ByteBuffer byteBuffer) throws IOException {
-        int len = channel.read(byteBuffer);
-        if(Config.logRW){
-            Log.d(TAG, String.format("read %d %s ", len, channel.toString()));
-        }
-
-        return len;
-    }
 
     public static String byteToString(byte[] data, int off, int len) {
         len = Math.min(128, len);

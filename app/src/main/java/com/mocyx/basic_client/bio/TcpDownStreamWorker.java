@@ -2,8 +2,8 @@ package com.mocyx.basic_client.bio;
 
 import android.util.Log;
 
-import com.mocyx.basic_client.protocol.tcpip.Packet;
 import com.mocyx.basic_client.protocol.tcpip.TCBStatus;
+import com.mocyx.basic_client.protocol.tcpip.TCPHeader;
 import com.mocyx.basic_client.util.ProxyException;
 
 import java.io.IOException;
@@ -11,7 +11,8 @@ import java.nio.ByteBuffer;
 import java.nio.channels.ClosedChannelException;
 
 class TcpDownStreamWorker implements Runnable {
-    TcpTunnel tunnel;
+    private static final String TAG = "TcpDownStreamWorker";
+    final TcpTunnel tunnel;
 
     public TcpDownStreamWorker(TcpTunnel tunnel) {
         this.tunnel = tunnel;
@@ -29,7 +30,8 @@ class TcpDownStreamWorker implements Runnable {
                 if (tunnel.destSocket == null) {
                     throw new ProxyException("tunnel maybe closed");
                 }
-                int n = BioUtil.read(tunnel.destSocket, buffer);
+
+                int n = tunnel.destSocket.read( buffer);
 
                 synchronized (tunnel) {
                     if (n == -1) {
@@ -40,20 +42,20 @@ class TcpDownStreamWorker implements Runnable {
                             buffer.flip();
                             byte[] data = new byte[buffer.remaining()];
                             buffer.get(data);
-                            BioTcpHandler.sendTcpPack(tunnel, (byte) (Packet.TCPHeader.ACK), data);
+                            BioTcpHandler.sendTcpPack(tunnel, (byte) (TCPHeader.ACK), data);
                         }
                     }
                 }
             }
         } catch (ClosedChannelException e) {
-            Log.w(BioTcpHandler.TAG, String.format("channel closed %s", e.getMessage()));
+            Log.e(TAG, "channel closed ",e);
             quitType = "rst";
         } catch (IOException e) {
-            Log.e(BioTcpHandler.TAG, e.getMessage(), e);
+            Log.e(TAG, e.getMessage(), e);
             quitType = "rst";
         } catch (Exception e) {
             quitType = "rst";
-            Log.e(BioTcpHandler.TAG, "DownStreamWorker fail", e);
+            Log.e(TAG, "DownStreamWorker fail", e);
         }
         //Log.i(TAG, String.format("DownStreamWorker quit %d", tunnel.tunnelId));
         synchronized (tunnel) {
