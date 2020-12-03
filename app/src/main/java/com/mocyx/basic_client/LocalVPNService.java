@@ -3,6 +3,7 @@ package com.mocyx.basic_client;
 
 import android.app.PendingIntent;
 import android.content.Intent;
+import android.net.ProxyInfo;
 import android.net.VpnService;
 import android.os.ParcelFileDescriptor;
 import android.util.Log;
@@ -62,11 +63,13 @@ public class LocalVPNService extends VpnService {
             if (vpnInterface == null) {
                 Builder builder = new Builder();
                 builder.addAddress(VPN_ADDRESS, 32);
+//                builder.setHttpProxy(ProxyInfo.buildDirectProxy("http://me.pompip.cn",10086));
                 builder.addRoute(VPN_ROUTE, 0);
                 builder.addDnsServer(Config.dns);
-                if (Config.testLocal) {
-                    builder.addAllowedApplication("com.mocyx.basic_client");
-                }
+//                if (Config.testLocal) {
+//                    builder.addAllowedApplication("com.mocyx.basic_client");
+//                }
+                builder.addAllowedApplication("com.netease.cloudmusic");
                 vpnInterface = builder.setSession(getString(R.string.app_name)).setConfigureIntent(pendingIntent).establish();
             }
         } catch (Exception e) {

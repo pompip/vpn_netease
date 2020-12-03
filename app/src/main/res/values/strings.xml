@@ -1,4 +1,19 @@
 <resources>
     <string name="app_name">basic-client</string>
     <string name="action_settings">Settings</string>
+    <string name="disconnected">断开</string>
+    <string name="connecting">链接</string>
+    <string name="connected">连接</string>
+    <string name="incomplete_proxy_settings">设置</string>
+    <string name="unknown_package_names">未知包名</string>
+    <string name="port">端口</string>
+    <string name="address">地址</string>
+    <string name="secret">密码</string>
+    <string name="proxyhost">HOST</string>
+    <string name="proxyport">PORT</string>
+    <string name="packages">包名</string>
+    <string name="allowed">允许</string>
+    <string name="disallowed">不允许</string>
+    <string name="connect">连接</string>
+    <string name="disconnect">断开</string>
 </resources>
